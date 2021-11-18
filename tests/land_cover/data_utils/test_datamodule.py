@@ -13,11 +13,9 @@ import albumentations as A
 
 import torch
 
-CURRENT_FOLDER: Path = Path(os.path.dirname(__file__))
-DATA_FOLDER = CURRENT_FOLDER / ".." / ".." / ".." / "data"
 
-IMAGES_PATH = DATA_FOLDER / "dataset_UNZIPPED" / "train" / "images"
-MASKS_PATH = DATA_FOLDER / "dataset_UNZIPPED" / "train" / "masks"
+IMAGES_PATH = Path(os.environ["IMAGES_FOLDER"])
+MASKS_PATH = Path(os.environ["MASKS_FOLDER"])
 
 
 def test_init_and_setup_datamodule():
