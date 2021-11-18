@@ -1,0 +1,23 @@
+name: land_cover
+channels:
+  - conda-forge
+  - pytorch
+dependencies:
+  - python=3.8
+  - numpy
+  - tifffile
+  - pandas
+  - scikit-learn
+  - seaborn
+  - cudatoolkit=11.3
+  - pytorch>=1.8
+  - torchvision
+  - pytorch-lightning
+  - albumentations
+  - pytest
+#  - ipympl  # for interactive matplotlib widget
+#  - jupyterlab
+  # 3 next lines: code formatter
+#  - jupyterlab_code_formatter
+  - black
+  - isort
