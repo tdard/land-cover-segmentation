@@ -14,20 +14,21 @@ import albumentations as A
 import torch
 
 
-IMAGES_PATH = Path(os.environ["IMAGES_FOLDER"])
-MASKS_PATH = Path(os.environ["MASKS_FOLDER"])
+USER_NAME = os.environ["CHALLENGE_USERNAME"]
+USER_PWD = os.environ["CHALLENGE_PWD"]
+ROOT = Path(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "data")
+)  # This could be a temp file
 
 
 def test_init_and_setup_datamodule():
-    dm = LandCoverSegmentationDataModule(images_dir=IMAGES_PATH, masks_dir=MASKS_PATH)
+    dm = LandCoverSegmentationDataModule(root=ROOT)
     dm.setup()
     assert 1
 
 
 def test_train():
-    dm = LandCoverSegmentationDataModule(
-        images_dir=IMAGES_PATH, masks_dir=MASKS_PATH, train_size=0.9
-    )
+    dm = LandCoverSegmentationDataModule(root=ROOT, train_size=0.9)
     dm.setup()
 
     train_dataset = dm.train_dataset
@@ -41,12 +42,11 @@ def test_train():
     )
 
 
-@pytest.mark.parametrize("num_iterations,train_batch_size", [(1, 4), (4, 10)])
+@pytest.mark.parametrize("num_iterations,train_batch_size", [(1, 1), (4, 1)])
 def test_iterations(num_iterations: int, train_batch_size: int):
     dm = LandCoverSegmentationDataModule(
-        images_dir=IMAGES_PATH,
-        masks_dir=MASKS_PATH,
-        train_size=0.9,
+        root=ROOT,
+        train_size=0.5,
         transform=A.Compose(
             [
                 A.Lambda(name="to_float32", image=to_float32),

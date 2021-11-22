@@ -14,9 +14,9 @@ from torch.utils.data import random_split, DataLoader
 class LandCoverSegmentationDataModule(LightningDataModule):
     def __init__(
         self,
-        images_dir: PathLike,
-        masks_dir: PathLike,
+        root: Union[str, PathLike],
         transform: Optional[Callable] = None,
+        download: bool = False,
         train_size: Union[float, int] = 0.9,
         train_batch_size: int = 1,
         val_batch_size: int = 1,
@@ -25,9 +25,9 @@ class LandCoverSegmentationDataModule(LightningDataModule):
     ):
         super(LandCoverSegmentationDataModule, self).__init__()
 
-        self.images_dir: PathLike = images_dir
-        self.masks_dir: PathLike = masks_dir
+        self.root: Union[str, PathLike] = root
         self.transform: Optional[Callable] = transform
+        self.download: bool = download
         self.train_size: Union[float, int] = train_size
         self.train_batch_size: int = train_batch_size
         self.val_batch_size: int = val_batch_size
@@ -47,19 +47,15 @@ class LandCoverSegmentationDataModule(LightningDataModule):
                 "train_size should be a float between 0.0 and 1.0 or an integer greater than 1"
             )
 
-        if not (os.path.exists(self.images_dir) and os.path.exists(self.masks_dir)):
-            raise ValueError(
-                "One of the paths provided for images and masks does not exist"
-            )
+        if not os.path.exists(self.root):
+            raise ValueError("Root is not a valid path")
 
     def prepare_data(self) -> None:
         """Nothing to download as the dataset is private for the challenge"""
         pass
 
     def setup(self, stage: Optional[str] = None) -> None:
-        dataset = LandCoverSegmentationDataset(
-            self.images_dir, self.masks_dir, self.transform
-        )
+        dataset = LandCoverSegmentationDataset(self.root, self.transform, self.download)
 
         if isinstance(
             self.train_size, float

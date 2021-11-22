@@ -1,11 +1,15 @@
 import os
+import pathlib
 from os import PathLike
-from typing import Optional, Callable, List, Tuple, Any
+from typing import Optional, Callable, List, Tuple, Any, Union
 
+import numpy as np
 import tifffile
 from PIL import Image
 from torch.utils.data import Dataset
-import numpy as np
+
+from land_cover.data_utils.download_utils import download_file, login_with_csrf_form
+from land_cover.data_utils.file_utils import uncompress_zip
 
 
 class LandCoverSegmentationDatasetConfig:
@@ -80,23 +84,57 @@ class LandCoverSegmentationDatasetConfig:
 
 
 class LandCoverSegmentationDataset(Dataset):
+
+    # Files aliases
+    X_TRAIN = "X_train.csv"
+    Y_TRAIN = "y_train.csv"
+    X_TEST = "X_test.csv"
+    DATASET = "dataset.zip"
+
+    # URLs
+    LOGIN_URL = "https://challengedata.ens.fr/login/"
+
+    DATA_URLS = {
+        X_TRAIN: "https://challengedata.ens.fr/participants/challenges/48/download/x-train",  # csv
+        Y_TRAIN: "https://challengedata.ens.fr/participants/challenges/48/download/y-train",  # csv
+        X_TEST: "https://challengedata.ens.fr/participants/challenges/48/download/x-test",  # csv
+        DATASET: "https://challengedata.ens.fr/participants/challenges/48/download/supplementary-files",  # Zip
+    }
+
+    # Dataset structure
+    TRAIN_IMAGES_FOLDER = os.path.join("train", "images")
+    TRAIN_MASKS_FOLDER = os.path.join("train", "masks")
+
     def __init__(
         self,
-        images_dir: PathLike,
-        masks_dir: PathLike,
+        root: Union[str, PathLike],
         transform: Optional[Callable] = None,
+        download: bool = True,
     ):
         """
-
-        :param images_dir: The directory of images
-        :param masks_dir: The directory of masks
+        :param root: The directory in which to put the dataset
         :param transform: The transform to apply to images and masks
+        :param download: If you want to download the dataset. You need to have set the environment variables
+        CHALLENGE_USERNAME and CHALLENGE_PWD with your credentials on the website challengedata.ens.fr
 
         """
         super(LandCoverSegmentationDataset, self).__init__()
-        self.images_dir: PathLike = images_dir
-        self.masks_dir: PathLike = masks_dir
+
+        self.root: Union[str, PathLike] = root
         self.transform: Optional[Callable] = transform
+
+        self.images_dir: str = os.path.join(self.dataset_path, self.TRAIN_IMAGES_FOLDER)
+        self.masks_dir: str = os.path.join(self.dataset_path, self.TRAIN_MASKS_FOLDER)
+
+        if (not download) and not (
+            os.path.isdir(self.images_dir) or os.path.isdir(self.masks_dir)
+        ):
+            raise ValueError("The directories for the dataset do not exist")
+
+        if download:
+            self.download()
+
+        self.uncompress_dataset()
 
         self.__images: List[str] = sorted(
             [
@@ -110,6 +148,33 @@ class LandCoverSegmentationDataset(Dataset):
                 for mask_name in os.listdir(self.masks_dir)
             ]
         )
+
+    @property
+    def dataset_path(self) -> str:
+        return os.path.join(self.root, pathlib.Path(self.DATASET).stem)
+
+    def download(self):
+        if "CHALLENGE_PWD" not in os.environ or "CHALLENGE_USERNAME" not in os.environ:
+            raise KeyError(
+                "User should provide his credential through 'CHALLENGE_PWD' and 'CHALLENGE_USERNAME' "
+                "variables"
+            )
+
+        session = login_with_csrf_form(
+            self.LOGIN_URL,
+            username=os.environ["CHALLENGE_USERNAME"],
+            password=os.environ["CHALLENGE_PWD"],
+            username_form_name="username",
+            password_form_name="password",
+        )
+
+        for filename, url in self.DATA_URLS.items():
+            download_file(url, session, self.root, filename)
+
+    def uncompress_dataset(self):
+        dataset_zip_path = os.path.join(self.root, self.DATASET)
+        if not os.path.isdir(self.dataset_path) and os.path.exists(dataset_zip_path):
+            uncompress_zip(dataset_zip_path, self.root, keep_zip_name=False)
 
     @property
     def images(self) -> List[str]:
