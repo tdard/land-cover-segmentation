@@ -1,9 +1,11 @@
-import requests
-import os
 import cgi
-from os import PathLike
 import logging
+import os
+from os import PathLike
+
+import requests
 from tqdm import tqdm
+from typing import Optional
 
 
 logger = logging.getLogger(__file__)
@@ -54,6 +56,7 @@ def download_file(
     url: str,
     session: requests.Session,
     target_directory: PathLike,
+    filename: Optional[str] = None,
     chunk_size: int = 1024 * 1024,
 ) -> str:
     """
@@ -63,6 +66,7 @@ def download_file(
     :param url: The URL corresponding to the file to download
     :param session: The bounded session
     :param target_directory: The local directory in which we want to download the files
+    :param filename: An optional alias for the downloaded file. Must be consistent with the file extension.
     :param chunk_size: The block size in bytes for incoming streaming data
     :return: The path to the downloaded file
     """
@@ -74,7 +78,13 @@ def download_file(
     try:
         header = response.headers["Content-Disposition"]
         _, params = cgi.parse_header(header)
-        filename = params["filename"]
+        remote_filename = params["filename"]
+
+        if filename is None:
+            filename = remote_filename
+        else:
+            assert remote_filename.split('.')[-1] == filename.split('.')[-1]
+            logger.info(f"Assign name '{filename}' to file '{remote_filename}' ")
     except KeyError:
         logger.exception(
             "Could not find the right header or the filename. Make sure you are logged"
@@ -91,7 +101,7 @@ def download_file(
         with session.get(url, stream=True) as response:
             response.raise_for_status()
 
-            print(f"Download '{filename}' at '{url}'")
+            print(f"Download '{remote_filename}' at '{url}'")
             print(f"You can find this file at: '{file_path}'")
 
             # # Setup progress bar
