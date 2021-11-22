@@ -31,7 +31,7 @@ def uncompress_zip(
             name_without_extension = file_path.stem
 
         if target_dir is not None:
-            target_dir = os.sep.join([target_dir, name_without_extension])
+            target_dir = os.path.join(target_dir, name_without_extension)
         else:
             target_dir = name_without_extension
 
