@@ -5,17 +5,23 @@ from land_cover.data_utils.dataset import LandCoverSegmentationDataset
 import albumentations as A
 
 
-IMAGES_PATH = Path(os.environ["IMAGES_FOLDER"])
-MASKS_PATH = Path(os.environ["MASKS_FOLDER"])
+USER_NAME = os.environ["CHALLENGE_USERNAME"]
+USER_PWD = os.environ["CHALLENGE_PWD"]
+ROOT = Path(os.path.join(os.path.dirname(__file__), "..", "..", "..", "data"))  # This could be a temp file
 
 
-def test_instantiate_dataset_no_transform():
-    dataset = LandCoverSegmentationDataset(images_dir=IMAGES_PATH, masks_dir=MASKS_PATH)
+def test_download_dataset():
+    dataset = LandCoverSegmentationDataset(root=ROOT, transform=None, download=True)
+    assert 1
+
+
+def test_instantiate_dataset_no_download():
+    dataset = LandCoverSegmentationDataset(root=ROOT, download=False)
     assert 1
 
 
 def test_dataset_images():
-    dataset = LandCoverSegmentationDataset(images_dir=IMAGES_PATH, masks_dir=MASKS_PATH)
+    dataset = LandCoverSegmentationDataset(root=ROOT)
     images = dataset.images
 
     assert isinstance(images, list)
@@ -23,7 +29,7 @@ def test_dataset_images():
 
 
 def test_dataset_masks():
-    dataset = LandCoverSegmentationDataset(images_dir=IMAGES_PATH, masks_dir=MASKS_PATH)
+    dataset = LandCoverSegmentationDataset(ROOT)
     masks = dataset.masks
 
     assert isinstance(masks, list)
@@ -32,7 +38,7 @@ def test_dataset_masks():
 
 def test_images_masks_coherence():
     """Check out the length of masks and images data, as well as correct naming"""
-    dataset = LandCoverSegmentationDataset(images_dir=IMAGES_PATH, masks_dir=MASKS_PATH)
+    dataset = LandCoverSegmentationDataset(ROOT)
 
     # Length comparison
     assert len(dataset.images) == len(dataset.masks)
@@ -45,13 +51,13 @@ def test_images_masks_coherence():
 
 
 def test_segmentation_dataset_len():
-    dataset = LandCoverSegmentationDataset(images_dir=IMAGES_PATH, masks_dir=MASKS_PATH)
+    dataset = LandCoverSegmentationDataset(ROOT)
 
     assert len(dataset) > 0  # Requires at least one image and one mask
 
 
 def test_segmentation_dataset_getitem_no_transform():
-    dataset = LandCoverSegmentationDataset(images_dir=IMAGES_PATH, masks_dir=MASKS_PATH)
+    dataset = LandCoverSegmentationDataset(ROOT)
     item = dataset[0]
 
     assert isinstance(item, tuple) and len(item) == 2
@@ -67,7 +73,7 @@ def test_segmentation_dataset_getitem_with_transform():
     )
 
     dataset = LandCoverSegmentationDataset(
-        images_dir=IMAGES_PATH, masks_dir=MASKS_PATH, transform=transform
+        root=ROOT, transform=transform
     )
 
     image, mask = dataset[0]
