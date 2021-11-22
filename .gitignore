@@ -3,4 +3,5 @@ build
 *.egg-info
 *__pycache__
 .idea
-data
+*.csv
+*.tif
