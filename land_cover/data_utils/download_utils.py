@@ -83,7 +83,7 @@ def download_file(
         if filename is None:
             filename = remote_filename
         else:
-            assert remote_filename.split('.')[-1] == filename.split('.')[-1]
+            assert remote_filename.split(".")[-1] == filename.split(".")[-1]
             logger.info(f"Assign name '{filename}' to file '{remote_filename}' ")
     except KeyError:
         logger.exception(

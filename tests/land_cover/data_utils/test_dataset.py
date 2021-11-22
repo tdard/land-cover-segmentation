@@ -7,7 +7,9 @@ import albumentations as A
 
 USER_NAME = os.environ["CHALLENGE_USERNAME"]
 USER_PWD = os.environ["CHALLENGE_PWD"]
-ROOT = Path(os.path.join(os.path.dirname(__file__), "..", "..", "..", "data"))  # This could be a temp file
+ROOT = Path(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "data")
+)  # This could be a temp file
 
 
 def test_download_dataset():
@@ -72,9 +74,7 @@ def test_segmentation_dataset_getitem_with_transform():
         ]
     )
 
-    dataset = LandCoverSegmentationDataset(
-        root=ROOT, transform=transform
-    )
+    dataset = LandCoverSegmentationDataset(root=ROOT, transform=transform)
 
     image, mask = dataset[0]
 
