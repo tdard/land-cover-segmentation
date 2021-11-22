@@ -2,7 +2,7 @@
 
 Using SG2LC Land Cover Dataset (modified by Preligens in ENS Challenge) <br>
 
-To use and download the dataset, you must own an account on [https://challengedata.ens.fr/](https://challengedata.ens.fr/)
+To use and download the dataset, you must own an account on [https://challengedata.ens.fr/](https://challengedata.ens.fr/), and you must participate to the [https://challengedata.ens.fr/participants/challenges/48/](Preligens Challenge 2021).
 
 # Usage
 
