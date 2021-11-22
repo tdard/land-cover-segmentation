@@ -16,14 +16,14 @@ export CHALLENGE_PWD=<userpassword>
 ```
 from land_cover import LandCoverSegmentationDataset
 
-dataset = LandCoverSegmentationDataset(images_dir=..., masks_dir=..., transform=...)
+dataset = LandCoverSegmentationDataset(root=..., transform=...)
 ```
 
 ## Datamodule (pytorch-lightning)
 ```
 from land_cover import LandCoverSegmentationDataModule
 
-dm = LandCoverSegmentationDataModule(images_dir=..., masks_dir=..., transform=..., <extra_params>)
+dm = LandCoverSegmentationDataModule(root=..., transform=..., <extra_params>)
 ```
 
 Note: the datamodule does not have test and predict dataloaders
