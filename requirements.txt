@@ -1,0 +1,8 @@
+tifffile
+numpy
+pytorch>=1.8
+torchvision
+pytorch-lightning
+albumentations
+pytest
+pytest-cov
