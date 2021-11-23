@@ -118,12 +118,18 @@ def download_file(
                 with open(file_path, "wb") as file:
                     # Iterate on chunks of the response
                     for chunk in response.iter_content(chunk_size=chunk_size):
-                        progress_bar.update(len(chunk))
-                        file.write(chunk)
+                        if chunk:
+                            progress_bar.update(len(chunk))
+                            file.write(chunk)
+                        else:
+                            print(progress_bar.n)
+                            breakpoint()
 
             if total_size_in_bytes != 0 and progress_bar.n != total_size_in_bytes:
                 logger.error(
                     "ERROR, mismatch between downloaded file size and expected file size"
                 )
+                logger.debug(f"Bytes expected: {total_size_in_bytes}, bytes received: {progress_bar.n}")
+
 
     return file_path
