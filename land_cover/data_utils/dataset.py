@@ -173,7 +173,7 @@ class LandCoverSegmentationDataset(Dataset):
 
     def uncompress_dataset(self):
         dataset_zip_path = os.path.join(self.root, self.DATASET)
-        if not os.path.isdir(self.dataset_path) and os.path.exists(dataset_zip_path):
+        if (not os.path.isdir(self.dataset_path)) and os.path.exists(dataset_zip_path):
             uncompress_zip(dataset_zip_path, self.root, keep_zip_name=False)
 
     @property
