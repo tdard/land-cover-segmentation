@@ -43,7 +43,7 @@ jobs:
           CHALLENGE_PWD: ${{ secrets.CHALLENGE_PWD }}
         run: |
           echo Display username: $CHALLENGE_USERNAME
-          pytest --cov
+          pytest --cov -s
       - name: Upload coverage
         uses: actions/upload-artifact@v2
         with:
