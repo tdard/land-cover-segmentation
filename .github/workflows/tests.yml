@@ -2,8 +2,10 @@ name: Tests
 
 # Trigger for a new workflow
 on:
-  - push
-  - pull_request
+  push:
+    paths-ignore:
+      - '**.md'
+      - '.ipynb'
 
 # What is done in the workflow
 jobs:
@@ -27,16 +29,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-#      Step 4: setup the env
-      - name: Set the right environment variables
-        env:
-          CHALLENGE_USERNAME: ${{ secrets.CHALLENGE_USERNAME }}
-          CHALLENGE_PWD: ${{ secrets.CHALLENGE_PWD }}
-        run: |
-          export CHALLENGE_PWD=$CHALLENGE_PWD
-          export CHALLENGE_USERNAME=$CHALLENGE_USERNAME
-
-#      Step 5: run tests
+#      Step 4: run tests
       - name: Run pytest
         env:
           CHALLENGE_USERNAME: ${{ secrets.CHALLENGE_USERNAME }}
@@ -44,8 +37,3 @@ jobs:
         run: |
           echo Display username: $CHALLENGE_USERNAME
           pytest --cov -s
-      - name: Upload coverage
-        uses: actions/upload-artifact@v2
-        with:
-          name: coverage
-          path: .coverage
