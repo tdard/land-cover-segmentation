@@ -1,3 +1,5 @@
+![test](https://github.com/tdard/land-cover-segmentation/actions/workflows/tests.yml/badge.svg)
+
 # Land Cover Segmentation 
 
 Using SG2LC Land Cover Dataset (modified by Preligens in ENS Challenge) <br>
