@@ -22,7 +22,7 @@ ROOT = Path(
 
 
 def test_init_and_setup_datamodule():
-    dm = LandCoverSegmentationDataModule(root=ROOT)
+    dm = LandCoverSegmentationDataModule(root=ROOT, download=True)
     dm.setup()
     assert 1
 

@@ -1,0 +1,51 @@
+name: Tests
+
+# Trigger for a new workflow
+on:
+  - push
+  - pull_request
+
+# What is done in the workflow
+jobs:
+  tests:  # Job name
+    runs-on: ubuntu-latest
+
+    steps:
+#      Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+#      Step 2: Setup python
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+#      Step 3: Install deps
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+#      Step 4: setup the env
+      - name: Set the right environment variables
+        env:
+          CHALLENGE_USERNAME: ${{ secrets.CHALLENGE_USERNAME }}
+          CHALLENGE_PWD: ${{ secrets.CHALLENGE_PWD }}
+        run: |
+          export CHALLENGE_PWD=$CHALLENGE_PWD
+          export CHALLENGE_USERNAME=$CHALLENGE_USERNAME
+
+#      Step 5: run tests
+      - name: Run pytest
+        env:
+          CHALLENGE_USERNAME: ${{ secrets.CHALLENGE_USERNAME }}
+          CHALLENGE_PWD: ${{ secrets.CHALLENGE_PWD }}
+        run: |
+          echo Display username: $CHALLENGE_USERNAME
+          pytest --cov
+      - name: Upload coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: .coverage

@@ -172,9 +172,10 @@ class LandCoverSegmentationDataset(Dataset):
             download_file(url, session, self.root, filename)
 
     def uncompress_dataset(self):
-        dataset_zip_path = os.path.join(self.root, self.DATASET)
-        if not os.path.isdir(self.dataset_path) and os.path.exists(dataset_zip_path):
-            uncompress_zip(dataset_zip_path, self.root, keep_zip_name=False)
+        if not os.path.isdir(self.dataset_path):
+            dataset_zip_path = os.path.join(self.root, self.DATASET)
+            if os.path.exists(dataset_zip_path):
+                uncompress_zip(dataset_zip_path, self.root, keep_zip_name=False)
 
     @property
     def images(self) -> List[str]:

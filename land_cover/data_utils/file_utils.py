@@ -20,7 +20,9 @@ def uncompress_zip(
     :param keep_zip_name:
     :return: the path to the uncompressed folder
     """
-
+    if not zipfile.is_zipfile(file_path):
+        raise ValueError(f"'{file_path}' is not a valid zip file.")
+    
     # For a zip file 'archive.zip' and a target directory '/target/', build the desired target directory:
     # '/target/archive/' in which the unzipped data will be put in
     if keep_zip_name:
