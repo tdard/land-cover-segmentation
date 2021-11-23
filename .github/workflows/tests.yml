@@ -39,7 +39,12 @@ jobs:
 
 #      Step 5: run tests
       - name: Run pytest
-        run: pytest --cov
+        env:
+          CHALLENGE_USERNAME: ${{ secrets.CHALLENGE_USERNAME }}
+          CHALLENGE_PWD: ${{ secrets.CHALLENGE_PWD }}
+        run: |
+          echo Display username: $CHALLENGE_USERNAME
+          pytest --cov
       - name: Upload coverage
         uses: actions/upload-artifact@v2
         with:
